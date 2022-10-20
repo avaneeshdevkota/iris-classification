@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.preprocessing import StandardScaler
-from imblearn.over_sampling import RandomOverSampler
+from imblearn.under_sampling import RandomUnderSampler
 
 #Column Labels
 cols = ["SLength", "SWidth", "PLength", "PWidth", "Class"]
@@ -14,7 +14,7 @@ df.columns = cols
 
 train, valid, test = np.split(df.sample(frac=1), [int(0.6*len(df)), int(0.8*len(df))])
 
-def data_scaler(dataframe, oversample = False):
+def data_scaler(dataframe, undersample = False):
 
     # x is our features matrix and y is our target
     x = dataframe[dataframe.columns[:-1]].values
@@ -24,12 +24,13 @@ def data_scaler(dataframe, oversample = False):
     scaler = StandardScaler()
     x = scaler.fit_transform(x)
 
-    #Equalizes the number of samples of different classes.
-    if (oversample == True):
+    #Equalizes the number of samples of different classes by deleting samples of overrepresented classes
 
-        ros = RandomOverSampler()
-        x,y = ros.fit_resample(x,y)
-    
+    if (undersample == True):
+
+        rus = RandomUnderSampler()
+        x,y = rus.fit_resample(x,y)
+        
     #Data is the features matrix and target side by side, given by np.hstack
 
     data = np.hstack((x, np.reshape(y,(-1,1))))
@@ -38,9 +39,9 @@ def data_scaler(dataframe, oversample = False):
 
 #We only wish to check against valid and test so we don't oversample.
 
-train, xtrain, ytrain = data_scaler(train, oversample = True)
-valid, xvalid, yvalid = data_scaler(valid, oversample = False)
-test, xtest, ytest = data_scaler(test, oversample = False)
+train, xtrain, ytrain = data_scaler(train, undersample = True)
+valid, xvalid, yvalid = data_scaler(valid, undersample = False)
+test, xtest, ytest = data_scaler(test, undersample = False)
 
 #K_Nearest_Neighbours
 
